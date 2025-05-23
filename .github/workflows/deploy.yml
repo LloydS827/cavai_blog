@@ -45,10 +45,24 @@ jobs:
         npm install -g qshell
         
         # 配置七牛云账号
-        echo "$QINIU_ACCESS_KEY $QINIU_SECRET_KEY" | qshell account
+        qshell account $QINIU_ACCESS_KEY $QINIU_SECRET_KEY
+        
+        # 创建上传配置文件
+        cat > qiniu_upload.json << EOF
+        {
+          "src_dir": "public",
+          "bucket": "$QINIU_BUCKET",
+          "key_prefix": "",
+          "overwrite": true,
+          "check_exists": true,
+          "check_hash": true,
+          "check_size": true,
+          "rescan_local": true
+        }
+        EOF
         
         # 上传文件到七牛云
-        qshell qupload2 --src-dir=public --bucket=$QINIU_BUCKET --overwrite=true
+        qshell qupload qiniu_upload.json
         
         echo "✅ 部署到七牛云完成！"
 
