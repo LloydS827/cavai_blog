@@ -1,0 +1,115 @@
+/* 字体自定义 - 现代化字体方案 */
+
+/* 方案1: 超现代 - Inter + 阿里巴巴普惠体 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.alicdn.com/css?family=AlibabaPuHuiTi');
+
+body {
+    font-family: 'Inter', 'AlibabaPuHuiTi', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', 'AlibabaPuHuiTi', 'PingFang SC', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+/* 方案2: 温和现代 - Poppins + 思源黑体 */
+/*
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Poppins', 'Noto Sans SC', 'PingFang SC', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', 'Noto Sans SC', sans-serif;
+    font-weight: 600;
+}
+*/
+
+/* 方案3: 极简现代 - System UI + 苹方 */
+/*
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Segoe UI Variable', 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 400;
+    font-feature-settings: 'liga' 1, 'calt' 1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: system-ui, -apple-system, 'PingFang SC', sans-serif;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+}
+*/
+
+/* 方案4: 科技感 - JetBrains Mono + Source Han Sans */
+/*
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Source+Han+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Source Han Sans SC', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'JetBrains Mono', 'Source Han Sans SC', monospace;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+*/
+
+/* 代码字体 - 现代等宽字体 */
+code, pre, .highlight code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+    font-size: 0.9em;
+    font-weight: 400;
+    font-feature-settings: 'liga' 1, 'calt' 1;
+}
+
+/* 现代化排版优化 */
+.post-content p {
+    text-align: justify;
+    line-height: 1.8;
+    margin-bottom: 1.2em;
+}
+
+/* 现代引用块 */
+blockquote {
+    font-style: normal;
+    font-size: 1.05em;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    border-left: 3px solid var(--primary);
+    padding-left: 1.5em;
+    margin-left: 0;
+}
+
+/* 现代链接样式 */
+a {
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom-color 0.2s ease;
+}
+
+a:hover {
+    border-bottom-color: var(--primary);
+}
+
+/* 标题间距优化 */
+h1 { font-size: 2.2em; margin: 1.5em 0 0.8em 0; }
+h2 { font-size: 1.8em; margin: 1.3em 0 0.7em 0; }
+h3 { font-size: 1.5em; margin: 1.2em 0 0.6em 0; }
+h4 { font-size: 1.3em; margin: 1.1em 0 0.5em 0; }
+h5 { font-size: 1.1em; margin: 1em 0 0.4em 0; }
+h6 { font-size: 1em; margin: 0.9em 0 0.4em 0; } 

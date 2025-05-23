@@ -1,7 +1,7 @@
 +++
-date = '{{ .Date }}'
-draft = true
-title = '{{ replace .File.ContentBaseName "-" " " | title }}'
+date = '2025-05-23T21:14:44+08:00'
+draft = false
+title = 'Hugo Tutorial'
 description = "描述你的文章内容"
 tags = ["标签1", "标签2"]
 categories = ["分类"]

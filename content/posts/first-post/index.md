@@ -8,6 +8,8 @@ date: "2024-03-30"
 
 This is for rendering-test only. 
 
+![logo](./assets/logo.png)
+
 ## 文本格式示例
 
 这是**粗体文本**，这是*斜体文本*，这是~~删除线文本~~，这是`行内代码`。
