@@ -29,13 +29,18 @@ jobs:
 
     # 4. 部署到七牛云
     - name: Deploy to Qiniu Cloud
-      if: ${{ secrets.QINIU_ACCESS_KEY != '' }}
       env:
         QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
         QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
         QINIU_BUCKET: ${{ secrets.QINIU_BUCKET }}
         QINIU_ZONE: ${{ secrets.QINIU_ZONE }}
       run: |
+        # 检查是否配置了七牛云密钥
+        if [ -z "$QINIU_ACCESS_KEY" ]; then
+          echo "⚠️ 七牛云密钥未配置，跳过七牛云部署"
+          exit 0
+        fi
+        
         # 安装七牛云命令行工具
         npm install -g qshell
         
