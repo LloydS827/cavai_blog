@@ -1,33 +1,56 @@
-name: Deploy Hugo Blog
+name: Deploy Hugo Blog to Multiple Platforms
 
 on:
   push:
-    branches:
-      - master  # 如果您使用master作为主分支，请修改为master
+    branches: [ main, master ]
+  workflow_dispatch:  # 支持手动触发
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-        with:
-          submodules: true  # 获取Hugo主题子模块
-          fetch-depth: 0    # 获取所有历史和标签
+    # 1. 检出代码
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
-        with:
-          hugo-version: 'latest'
-          extended: true
+    # 2. 安装Hugo
+    - name: Setup Hugo
+      uses: peaceiris/actions-hugo@v2
+      with:
+        hugo-version: 'latest'
+        extended: true
 
-      - name: Build
-        run: hugo --minify
+    # 3. 构建网站
+    - name: Build Hugo Site
+      run: hugo --minify
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          publish_branch: gh-pages  # 部署到gh-pages分支
-          cname: www.cavai.cn
+    # 4. 部署到七牛云
+    - name: Deploy to Qiniu Cloud
+      if: ${{ secrets.QINIU_ACCESS_KEY != '' }}
+      env:
+        QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
+        QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
+        QINIU_BUCKET: ${{ secrets.QINIU_BUCKET }}
+        QINIU_ZONE: ${{ secrets.QINIU_ZONE }}
+      run: |
+        # 安装七牛云命令行工具
+        npm install -g qshell
+        
+        # 配置七牛云账号
+        echo "$QINIU_ACCESS_KEY $QINIU_SECRET_KEY" | qshell account
+        
+        # 上传文件到七牛云
+        qshell qupload2 --src-dir=public --bucket=$QINIU_BUCKET --overwrite=true
+        
+        echo "✅ 部署到七牛云完成！"
+
+    # 5. 备用：同时部署到GitHub Pages
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
+        cname: www.cavai.cn
