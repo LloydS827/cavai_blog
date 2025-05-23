@@ -4,7 +4,7 @@ date: "2024-03-30"
 ---
 ## TEST-Blog
 
-![logo](./assets/logo.png)
+![image-20250523201408210](./image-20250523201408210.png)
 
 This is for rendering-test only. 
 
