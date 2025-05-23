@@ -41,13 +41,32 @@ jobs:
           exit 0
         fi
         
+        echo "🔧 开始配置七牛云部署..."
+        echo "📦 存储桶: $QINIU_BUCKET"
+        echo "🌍 存储区域: $QINIU_ZONE"
+        
+        # 检查public目录内容
+        echo "📁 检查构建产物:"
+        ls -la public/
+        echo "📄 检查index.html是否存在:"
+        if [ -f "public/index.html" ]; then
+          echo "✅ index.html 存在"
+          head -5 public/index.html
+        else
+          echo "❌ index.html 不存在!"
+          exit 1
+        fi
+        
         # 安装七牛云命令行工具
+        echo "🛠️ 安装qshell工具..."
         npm install -g qshell
         
         # 配置七牛云账号
-        qshell account $QINIU_ACCESS_KEY $QINIU_SECRET_KEY
+        echo "🔑 配置七牛云账号..."
+        qshell account $QINIU_ACCESS_KEY $QINIU_SECRET_KEY qiniu-deploy
         
         # 创建上传配置文件
+        echo "📋 创建上传配置..."
         cat > qiniu_upload.json << EOF
         {
           "src_dir": "public",
@@ -61,10 +80,16 @@ jobs:
         }
         EOF
         
+        echo "📤 开始上传到七牛云..."
         # 上传文件到七牛云
         qshell qupload qiniu_upload.json
         
+        # 检查上传结果
+        echo "🔍 检查上传结果..."
+        qshell listbucket $QINIU_BUCKET --prefix="" --max=10
+        
         echo "✅ 部署到七牛云完成！"
+        echo "🌐 访问地址: http://$QINIU_BUCKET.your-domain.com"
 
     # 5. 备用：同时部署到GitHub Pages
     - name: Deploy to GitHub Pages
