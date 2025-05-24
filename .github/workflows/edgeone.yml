@@ -1,0 +1,73 @@
+name: Deploy to Tencent EdgeOne Pages
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+        fetch-depth: 0
+
+    - name: Setup Hugo
+      uses: peaceiris/actions-hugo@v2
+      with:
+        hugo-version: 'latest'
+        extended: true
+
+    - name: Build Hugo site for EdgeOne
+      run: |
+        # 构建网站
+        hugo --minify --destination public
+        
+        # 验证构建结果
+        echo "📊 Build completed. Generated files:"
+        echo "  HTML files: $(find public -name '*.html' | wc -l)"
+        echo "  All files: $(find public -type f | wc -l)"
+        
+        # 检查关键文件
+        echo "📄 Critical files check:"
+        [ -f "public/index.html" ] && echo "✅ Homepage exists" || echo "❌ Homepage missing"
+        [ -d "public/posts" ] && echo "✅ Posts directory exists" || echo "❌ Posts directory missing"
+        
+        # 列出posts目录内容
+        if [ -d "public/posts" ]; then
+          echo "📁 Posts structure:"
+          find public/posts -name 'index.html' | head -10
+        fi
+        
+        # 验证文件内容不为空
+        if [ -f "public/index.html" ]; then
+          SIZE=$(stat -c%s "public/index.html")
+          echo "📏 Homepage size: ${SIZE} bytes"
+          if [ "$SIZE" -lt 100 ]; then
+            echo "❌ Warning: Homepage seems too small"
+            head -20 public/index.html
+          fi
+        fi
+
+    - name: Deploy to GitHub Pages (for EdgeOne sync)
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
+        publish_branch: gh-pages
+        force_orphan: true
+        
+    - name: Deployment Summary
+      run: |
+        echo "🚀 Deployment completed!"
+        echo "📍 EdgeOne should sync from gh-pages branch"
+        echo "🌐 Site URL: https://cavaiblog-7gywpuewb5.edgeone.app/"
+        echo ""
+        echo "If 404 persists, check EdgeOne Pages settings:"
+        echo "1. Source branch: gh-pages"
+        echo "2. Build directory: / (root)"
+        echo "3. Build command: (none - pre-built)" 

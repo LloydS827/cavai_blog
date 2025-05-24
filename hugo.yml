@@ -1,5 +1,5 @@
-# 临时使用七牛云免费域名，等cavai.cn备案完成后需要更换回来
-baseURL: "http://swrso6n9e.hd-bkt.clouddn.com/"
+# 使用Tencent EdgeOne Pages域名
+baseURL: "https://cavaiblog-7gywpuewb5.edgeone.app/"
 title: "CavAI"
 pagination:
   pagerSize: 5
@@ -12,9 +12,9 @@ buildDrafts: false
 buildFuture: false
 buildExpired: false
 
-# URL和路径配置
-relativeURLs: false
-canonifyURLs: true
+# URL和路径配置 - 为EdgeOne Pages优化
+relativeURLs: true  # 改为true以支持CDN部署
+canonifyURLs: false # 改为false避免路径冲突
 
 # 确保正确的 URL 结构
 permalinks:
