@@ -12,6 +12,14 @@ buildDrafts: false
 buildFuture: false
 buildExpired: false
 
+# URL和路径配置
+relativeURLs: false
+canonifyURLs: true
+
+# 确保正确的 URL 结构
+permalinks:
+  posts: "/:section/:slug/"
+
 # 为搜索功能添加必要的输出
 outputs:
   home:
@@ -23,7 +31,6 @@ minify:
   disableXML: true
   minifyOutput: true
 
-
 # Markdown 渲染相关配置
 markup:
   goldmark:
@@ -31,7 +38,7 @@ markup:
       unsafe: true  # 允许在 Markdown 中使用 HTML
   highlight:
     noClasses: false
-
+    
 params:
   env: production # 启用 google analytics, opengraph, twitter-cards 和 schema
   title: "Lloyd's Blog"
