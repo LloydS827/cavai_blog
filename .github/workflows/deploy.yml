@@ -86,54 +86,73 @@ jobs:
         echo "📁 Source directory: ./public"
         echo "🪣 Target bucket: ${{ secrets.QINIU_BUCKET }}"
         
-        # 创建上传配置文件
-        cat > qiniu_config.json << EOF
-        {
-          "src_dir": "./public",
-          "bucket": "${{ secrets.QINIU_BUCKET }}",
-          "overwrite": true,
-          "check_exists": true,
-          "check_hash": true,
-          "check_size": true,
-          "rescan_local": true,
-          "log_file": "qiniu_upload.log",
-          "log_level": "info"
-        }
-        EOF
+        # 先检查上传前的状态
+        echo "📊 Files in bucket before upload:"
+        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 5 || echo "No files found or bucket empty"
         
-        echo "📄 Upload configuration:"
-        cat qiniu_config.json
+        echo ""
+        echo "📁 Local files to upload:"
+        find ./public -type f | head -10
+        echo "Total local files: $(find ./public -type f | wc -l)"
         
-        echo "📤 Starting file upload..."
-        qshell qupload qiniu_config.json
+        # 删除旧的上传日志
+        rm -f qiniu_upload.log
         
-        echo "📋 Upload completed. Checking log..."
+        # 使用更简单直接的上传方式
+        echo "📤 Starting file upload with qupload2..."
+        qshell qupload2 \
+          --src-dir=./public \
+          --bucket=${{ secrets.QINIU_BUCKET }} \
+          --overwrite \
+          --check-exists \
+          --check-hash \
+          --check-size \
+          --rescan-local \
+          --log-file=qiniu_upload.log \
+          --log-level=info
+        
+        echo "📋 Upload command completed. Checking results..."
+        
+        # 检查上传日志
         if [ -f "qiniu_upload.log" ]; then
-          echo "📖 Upload log:"
-          cat qiniu_upload.log
+          echo "📖 Upload log (last 20 lines):"
+          tail -20 qiniu_upload.log
+        else
+          echo "⚠️ No upload log found"
         fi
         
-        echo "✅ Deployment completed successfully"
+        echo ""
+        echo "📊 Files in bucket after upload:"
+        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 10
+        
+        echo "✅ Deployment step completed"
       env:
         QINIU_BUCKET: ${{ secrets.QINIU_BUCKET }}
 
-    - name: Verify deployment
+    - name: Force refresh and verify
       run: |
-        echo "🔍 Verifying deployment..."
-        echo "📊 Listing files in bucket (first 20):"
-        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 20
+        echo "🔄 Forcing a direct file upload test..."
+        
+        # 测试单个文件上传
+        if [ -f "./public/index.html" ]; then
+          echo "📤 Testing direct upload of index.html..."
+          qshell fput ${{ secrets.QINIU_BUCKET }} index.html ./public/index.html
+          
+          echo "✅ Direct upload completed"
+        else
+          echo "❌ index.html not found in public directory"
+        fi
         
         echo ""
-        echo "📈 Counting total files in bucket:"
-        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 1000 | wc -l
-        
-        echo ""
-        echo "🔍 Looking for key files:"
-        echo "Checking for index.html:"
-        qshell listbucket ${{ secrets.QINIU_BUCKET }} "index.html" "" 1
+        echo "🔍 Final verification - checking specific files:"
+        qshell stat ${{ secrets.QINIU_BUCKET }} index.html || echo "index.html not found in bucket"
         
         echo ""
         echo "🌐 Your site should be available at:"
+        echo "https://swpw9fsbd.hd-bkt.clouddn.com/"
+        echo ""
+        echo "💡 Try accessing these URLs to test:"
+        echo "https://swpw9fsbd.hd-bkt.clouddn.com/index.html"
         echo "https://swpw9fsbd.hd-bkt.clouddn.com/"
       env:
         QINIU_BUCKET: ${{ secrets.QINIU_BUCKET }} 
