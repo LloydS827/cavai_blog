@@ -1,7 +1,14 @@
----
-title: "My Test Article"
-date: "2024-03-30"
----
++++
+title = "My Test Article"
+date = "2024-03-30T10:00:00+08:00"
+draft = false
+description = "这是一篇测试文章，包含各种格式示例"
+tags = ["测试", "示例"]
+categories = ["技术"]
+author = "Lloyd Sun"
+ShowToc = true
+TocOpen = false
++++
 ## TEST-Blog
 
 ![image-20250523201408210](./image-20250523201408210.png)

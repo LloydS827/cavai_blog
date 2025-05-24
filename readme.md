@@ -2,55 +2,68 @@
 
 基于Hugo + PaperMod主题的个人博客，部署在Zeabur平台。
 
-## 📝 写作流程
+## �� 写作流程
 
-### 1. 创建新文章
+### 1. 创建新文章 (Page Bundle方式)
 
-使用Hugo命令创建新文章：
+使用Hugo命令创建新文章，每篇文章都有独立的文件夹：
 
 ```bash
-# 创建新文章（会自动使用模板）
-hugo new posts/your-article-title.md
+# 基本语法
+hugo new posts/文章名称/index.md
 
-# 示例
-hugo new posts/my-first-post.md
-hugo new posts/hugo-tutorial.md
+# 具体示例
+hugo new posts/ai-tutorial/index.md
+hugo new posts/docker-guide/index.md
+hugo new posts/thoughts-2024/index.md
 ```
 
-创建后的文章位于 `content/posts/` 目录下。
+创建后的文章结构：
 
-### 2. 编辑文章
+```
+content/posts/
+└── ai-tutorial/           # 文章文件夹
+    └── index.md          # 文章内容文件
+```
+
+### 2. 添加图片和资源
+
+每篇文章都有独立的文件夹，可以直接添加图片和资源：
+
+```bash
+content/posts/ai-tutorial/
+├── index.md              # 文章内容
+├── cover.jpg             # 封面图片
+├── diagram.png           # 示意图
+└── assets/               # 资源文件夹
+    ├── screenshot1.png
+    └── code-example.txt
+```
+
+在文章中引用图片：
+```markdown
+# 同目录下的图片
+![封面图片](cover.jpg)
+
+# assets文件夹中的图片  
+![截图](assets/screenshot1.png)
+
+# 带图片说明
+{{< figure src="diagram.png" caption="系统架构图" >}}
+```
+
+### 3. 编辑文章
 
 新创建的文章会自动使用 `archetypes/default.md` 模板，包含以下结构：
 
-```markdown
+```toml
 +++
-date = '2024-01-01T00:00:00+08:00'
-draft = true
-title = 'My First Post'
-description = "请填写文章描述，用于SEO和摘要显示"
-tags = []
-categories = []
-author = "Lloyd"
-cover = ""
-ShowToc = true
-TocOpen = false
-searchHidden = false
-ShowReadingTime = true
-ShowShareButtons = false
-ShowPostNavLinks = true
-ShowBreadCrumbs = true
-+++
-
-## 概述
-简要介绍这篇文章的主要内容和背景...
-
-## 主要内容
-### 核心要点
-你的内容...
+date = '2025-05-24T22:30:00+08:00'  # 自动生成当前时间
+draft = true                        # 默认为草稿状态
+title = 
 ```
 
-### 3. 发布文章
+### 4. 发布文章
 
 编辑完成后，将 `draft = true` 改为 `draft = false`，然后推送到GitHub：
 
