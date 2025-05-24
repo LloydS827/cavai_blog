@@ -1,4 +1,5 @@
-baseURL: "https://cavai.cn/"
+# 临时使用七牛云免费域名，等cavai.cn备案完成后需要更换回来
+baseURL: "https://swpw9fsbd.hd-bkt.clouddn.com/"
 title: "CavAI"
 pagination:
   pagerSize: 5
