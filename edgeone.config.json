@@ -1,0 +1,18 @@
+{
+  "framework": "hugo",
+  "buildCommand": "hugo --minify",
+  "outputDirectory": "public",
+  "installCommand": "",
+  "devCommand": "hugo server",
+  "nodeVersion": "18",
+  "environmentVariables": {
+    "HUGO_VERSION": "0.120.0",
+    "HUGO_ENV": "production"
+  },
+  "routes": [
+    {
+      "src": "/.*",
+      "dest": "/index.html"
+    }
+  ]
+} 

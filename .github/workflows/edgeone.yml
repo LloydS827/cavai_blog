@@ -1,4 +1,4 @@
-name: Deploy to Tencent EdgeOne Pages
+name: Validate Hugo Build for EdgeOne Pages
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  validate-build:
     runs-on: ubuntu-latest
     
     steps:
@@ -22,52 +22,49 @@ jobs:
         hugo-version: 'latest'
         extended: true
 
-    - name: Build Hugo site for EdgeOne
+    - name: Validate Hugo Build
       run: |
-        # 构建网站
-        hugo --minify --destination public
+        # 测试构建
+        echo "🧪 Testing Hugo build for EdgeOne Pages..."
+        hugo --minify --destination dist
         
         # 验证构建结果
-        echo "📊 Build completed. Generated files:"
-        echo "  HTML files: $(find public -name '*.html' | wc -l)"
-        echo "  All files: $(find public -type f | wc -l)"
+        echo "📊 Build validation completed:"
+        echo "  HTML files: $(find dist -name '*.html' | wc -l)"
+        echo "  All files: $(find dist -type f | wc -l)"
         
         # 检查关键文件
         echo "📄 Critical files check:"
-        [ -f "public/index.html" ] && echo "✅ Homepage exists" || echo "❌ Homepage missing"
-        [ -d "public/posts" ] && echo "✅ Posts directory exists" || echo "❌ Posts directory missing"
+        [ -f "dist/index.html" ] && echo "✅ Homepage exists" || echo "❌ Homepage missing"
+        [ -d "dist/posts" ] && echo "✅ Posts directory exists" || echo "❌ Posts directory missing"
         
         # 列出posts目录内容
-        if [ -d "public/posts" ]; then
+        if [ -d "dist/posts" ]; then
           echo "📁 Posts structure:"
-          find public/posts -name 'index.html' | head -10
+          find dist/posts -name 'index.html' | head -10
         fi
         
-        # 验证文件内容不为空
-        if [ -f "public/index.html" ]; then
-          SIZE=$(stat -c%s "public/index.html")
+        # 验证文件内容
+        if [ -f "dist/index.html" ]; then
+          SIZE=$(stat -c%s "dist/index.html")
           echo "📏 Homepage size: ${SIZE} bytes"
           if [ "$SIZE" -lt 100 ]; then
             echo "❌ Warning: Homepage seems too small"
-            head -20 public/index.html
+            head -20 dist/index.html
+          else
+            echo "✅ Homepage looks good"
           fi
         fi
-
-    - name: Deploy to GitHub Pages (for EdgeOne sync)
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./public
-        publish_branch: gh-pages
-        force_orphan: true
         
-    - name: Deployment Summary
+        # 清理测试文件
+        rm -rf dist
+        
+    - name: Build Instructions
       run: |
-        echo "🚀 Deployment completed!"
-        echo "📍 EdgeOne should sync from gh-pages branch"
-        echo "🌐 Site URL: https://cavaiblog-7gywpuewb5.edgeone.app/"
+        echo "🚀 Build validation passed!"
+        echo "📍 EdgeOne Pages should build from master branch with:"
+        echo "   Build Command: hugo --minify"
+        echo "   Output Directory: public"
+        echo "   Node.js Version: 18+"
         echo ""
-        echo "If 404 persists, check EdgeOne Pages settings:"
-        echo "1. Source branch: gh-pages"
-        echo "2. Build directory: / (root)"
-        echo "3. Build command: (none - pre-built)" 
+        echo "🌐 Site URL: https://cavaiblog-7gywpuewb5.edgeone.app/" 
