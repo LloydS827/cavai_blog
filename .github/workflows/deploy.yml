@@ -23,141 +23,42 @@ jobs:
         extended: true
 
     - name: Build Hugo site
-      run: |
-        echo "🏗️ Building Hugo site..."
-        hugo --minify
-        echo "✅ Hugo build completed"
-        echo "📊 Generated files:"
-        ls -la public/
-        echo "📁 Total files: $(find public -type f | wc -l)"
+      run: hugo --minify
 
     - name: Install qshell
       run: |
-        echo "📥 Installing qshell..."
         curl -fsSL https://github.com/qiniu/qshell/releases/download/v2.12.0/qshell-v2.12.0-linux-amd64.tar.gz -o qshell.tar.gz
         tar -zxf qshell.tar.gz
         sudo mv qshell /usr/local/bin/
         sudo chmod +x /usr/local/bin/qshell
-        echo "✅ qshell installed successfully"
-        qshell version
-
-    - name: Validate Secrets
-      run: |
-        echo "🔍 Validating environment variables..."
-        if [ -z "${{ secrets.QINIU_ACCESS_KEY }}" ]; then
-          echo "❌ QINIU_ACCESS_KEY is not set"
-          exit 1
-        else
-          echo "✅ QINIU_ACCESS_KEY is set (length: ${#QINIU_ACCESS_KEY})"
-        fi
-        
-        if [ -z "${{ secrets.QINIU_SECRET_KEY }}" ]; then
-          echo "❌ QINIU_SECRET_KEY is not set"
-          exit 1
-        else
-          echo "✅ QINIU_SECRET_KEY is set (length: ${#QINIU_SECRET_KEY})"
-        fi
-        
-        if [ -z "${{ secrets.QINIU_BUCKET }}" ]; then
-          echo "❌ QINIU_BUCKET is not set"
-          exit 1
-        else
-          echo "✅ QINIU_BUCKET is set: ${{ secrets.QINIU_BUCKET }}"
-        fi
-      env:
-        QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
-        QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
 
     - name: Configure qshell
       run: |
-        echo "🔧 Configuring qshell..."
         qshell account ${{ secrets.QINIU_ACCESS_KEY }} ${{ secrets.QINIU_SECRET_KEY }} default
-        echo "✅ qshell account configured"
-        
-        echo "🔍 Testing bucket access..."
-        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 1
       env:
         QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
         QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
 
     - name: Deploy to Qiniu
       run: |
-        echo "🚀 Starting deployment to Qiniu..."
-        echo "📁 Source directory: ./public"
-        echo "🪣 Target bucket: ${{ secrets.QINIU_BUCKET }}"
-        
-        # 清理qshell缓存，确保重新上传
-        echo "🧹 Cleaning qshell cache..."
+        # 清理缓存确保重新上传
         rm -rf ~/.qshell/users/default/qupload2/* || true
-        rm -rf ~/.qshell/users/default/listbucket/* || true
         
-        # 先检查上传前的状态
-        echo "📊 Files in bucket before upload:"
-        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 5 || echo "No files found or bucket empty"
-        
-        echo ""
-        echo "📁 Local files to upload:"
-        find ./public -type f | head -10
-        echo "Total local files: $(find ./public -type f | wc -l)"
-        
-        # 删除旧的上传日志
-        rm -f qiniu_upload.log
-        
-        # 强制上传所有文件，不检查现有文件
-        echo "📤 Starting FORCED file upload (no hash check)..."
+        # 强制上传所有文件
         qshell qupload2 \
           --src-dir=./public \
           --bucket=${{ secrets.QINIU_BUCKET }} \
           --overwrite \
-          --skip-path-prefixes="" \
-          --skip-file-prefixes="" \
-          --skip-suffixes="" \
-          --rescan-local \
-          --log-file=qiniu_upload.log \
-          --log-level=info
+          --rescan-local
         
-        echo "📋 Upload command completed. Checking results..."
-        
-        # 检查上传日志
-        if [ -f "qiniu_upload.log" ]; then
-          echo "📖 Upload log (last 30 lines):"
-          tail -30 qiniu_upload.log
-        else
-          echo "⚠️ No upload log found"
-        fi
-        
-        echo ""
-        echo "📊 Files in bucket after upload:"
-        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 10
-        
-        echo "✅ Deployment step completed"
+        echo "✅ Deployment completed"
+        echo "🌐 Site URL: https://swpw9fsbd.hd-bkt.clouddn.com/"
       env:
         QINIU_BUCKET: ${{ secrets.QINIU_BUCKET }}
 
-    - name: Force refresh and verify
+    - name: Verify deployment
       run: |
-        echo "🔄 Forcing a direct file upload test..."
-        
-        # 测试单个文件上传
-        if [ -f "./public/index.html" ]; then
-          echo "📤 Testing direct upload of index.html..."
-          qshell fput ${{ secrets.QINIU_BUCKET }} index.html ./public/index.html
-          
-          echo "✅ Direct upload completed"
-        else
-          echo "❌ index.html not found in public directory"
-        fi
-        
-        echo ""
-        echo "🔍 Final verification - checking specific files:"
-        qshell stat ${{ secrets.QINIU_BUCKET }} index.html || echo "index.html not found in bucket"
-        
-        echo ""
-        echo "🌐 Your site should be available at:"
-        echo "https://swpw9fsbd.hd-bkt.clouddn.com/"
-        echo ""
-        echo "💡 Try accessing these URLs to test:"
-        echo "https://swpw9fsbd.hd-bkt.clouddn.com/index.html"
-        echo "https://swpw9fsbd.hd-bkt.clouddn.com/"
+        echo "🔍 Verifying key files:"
+        qshell stat ${{ secrets.QINIU_BUCKET }} index.html
       env:
         QINIU_BUCKET: ${{ secrets.QINIU_BUCKET }} 
