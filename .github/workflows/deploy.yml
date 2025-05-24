@@ -26,9 +26,8 @@ jobs:
       run: |
         hugo --minify
         echo "📊 Generated $(find public -name '*.html' | wc -l) HTML files"
-        echo "📄 Key files check:"
-        ls -la public/index.html
-        find public -name 'index.html' | head -5
+        echo "📄 Critical files check:"
+        find public/posts -name 'index.html' | sort
 
     - name: Install qshell
       run: |
@@ -44,70 +43,74 @@ jobs:
         QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
         QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
 
-    - name: Smart sync to Qiniu
+    - name: Direct file sync to Qiniu
       run: |
-        # 完全清理qshell缓存和状态
-        echo "🧹 Cleaning all qshell cache..."
-        rm -rf ~/.qshell/ || true
+        echo "🚀 Starting direct file sync..."
         
-        # 重新初始化账户
+        # 清理所有缓存
+        rm -rf ~/.qshell/ || true
         qshell account ${{ secrets.QINIU_ACCESS_KEY }} ${{ secrets.QINIU_SECRET_KEY }} default
         
-        # 创建同步配置文件 - 强制覆盖模式
-        cat > sync_config.json << 'EOF'
-        {
-          "src_dir": "./public",
-          "bucket": "${{ secrets.QINIU_BUCKET }}",
-          "overwrite": true,
-          "check_exists": false,
-          "check_hash": false,
-          "check_size": false,
-          "rescan_local": true,
-          "skip_file_prefixes": "",
-          "skip_path_prefixes": "",
-          "skip_suffixes": "",
-          "log_level": "info",
-          "log_file": "upload.log"
-        }
-        EOF
+        # 统计要上传的文件
+        TOTAL_FILES=$(find public -type f | wc -l)
+        echo "📊 Total files to upload: $TOTAL_FILES"
         
-        # 替换bucket变量
-        sed -i "s/\${{ secrets.QINIU_BUCKET }}/${{ secrets.QINIU_BUCKET }}/g" sync_config.json
+        # 使用rsync风格的同步策略
+        echo "📤 Uploading files with force overwrite..."
         
-        echo "📄 Upload config:"
-        cat sync_config.json
+        # 方法1: 使用qupload2但禁用所有检查
+        qshell qupload2 \
+          --src-dir=./public \
+          --bucket=${{ secrets.QINIU_BUCKET }} \
+          --overwrite=true \
+          --check-exists=false \
+          --check-hash=false \
+          --check-size=false \
+          --rescan-local=true \
+          --ignore-dir=false
         
-        # 执行同步
-        echo "🚀 Starting sync..."
-        qshell qupload sync_config.json
+        echo "✅ Bulk upload completed"
         
-        # 检查上传日志
-        if [ -f "upload.log" ]; then
-          echo "📋 Upload summary:"
-          tail -10 upload.log
-        fi
+        # 方法2: 强制上传关键文件确保同步
+        echo "🔄 Force uploading critical files..."
         
-        echo "✅ Sync completed"
+        # 强制上传主页
+        qshell fput ${{ secrets.QINIU_BUCKET }} index.html ./public/index.html
+        
+        # 强制上传所有文章页面
+        find public/posts -name 'index.html' | while read file; do
+          key=$(echo "$file" | sed 's|^public/||')
+          echo "📤 Uploading: $key"
+          qshell fput ${{ secrets.QINIU_BUCKET }} "$key" "$file"
+        done
+        
+        echo "✅ Critical files upload completed"
+        
       env:
         QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
         QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
         QINIU_BUCKET: ${{ secrets.QINIU_BUCKET }}
 
-    - name: Verify critical files
+    - name: Verify all files
       run: |
-        echo "🔍 Verifying deployment..."
+        echo "🔍 Comprehensive verification..."
         
-        # 检查关键文件
-        echo "📄 Checking index.html:"
+        # 检查主页
+        echo "📄 Main page:"
         qshell stat ${{ secrets.QINIU_BUCKET }} index.html
         
-        echo "📄 Checking posts:"
-        qshell stat ${{ secrets.QINIU_BUCKET }} posts/my-new-blog-post/index.html || echo "❌ my-new-blog-post not found"
-        qshell stat ${{ secrets.QINIU_BUCKET }} posts/hugo-tutorial/index.html || echo "❌ hugo-tutorial not found"
+        # 检查所有文章
+        echo "📄 Articles verification:"
+        qshell stat ${{ secrets.QINIU_BUCKET }} posts/first-post/index.html || echo "❌ first-post missing"
+        qshell stat ${{ secrets.QINIU_BUCKET }} posts/hugo-tutorial/index.html || echo "❌ hugo-tutorial missing"
+        qshell stat ${{ secrets.QINIU_BUCKET }} posts/my-new-blog-post/index.html || echo "❌ my-new-blog-post missing"
+        qshell stat ${{ secrets.QINIU_BUCKET }} posts/my-test-article/index.html || echo "❌ my-test-article missing"
         
+        # 统计总文件数
         echo "📊 Total files in bucket:"
-        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 100 | wc -l
+        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 1000 | wc -l
         
-        echo "🌐 Site URL: https://swpw9fsbd.hd-bkt.clouddn.com/"
+        echo "🌐 Site should be updated at: https://swpw9fsbd.hd-bkt.clouddn.com/"
+        
       env:
         QINIU_BUCKET: ${{ secrets.QINIU_BUCKET }} 
