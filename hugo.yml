@@ -1,5 +1,5 @@
 # 使用Tencent EdgeOne Pages域名
-baseURL: "https://cavaiblog-7gywpuewb5.edgeone.app/"
+baseURL: "https://cavaiblog.edgeone.app/"
 title: "CavAI"
 pagination:
   pagerSize: 5
