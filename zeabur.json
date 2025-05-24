@@ -1,0 +1,11 @@
+{
+  "deploy": {
+    "frontend": {
+      "framework": "hugo",
+      "buildCommand": "hugo --gc --minify",
+      "outputDirectory": "public",
+      "installCommand": "npm install -g hugo-extended",
+      "nodejs": "18"
+    }
+  }
+} 
