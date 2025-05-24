@@ -23,28 +23,104 @@ jobs:
         extended: true
 
     - name: Build Hugo site
-      run: hugo --minify
+      run: |
+        echo "🏗️ Building Hugo site..."
+        hugo --minify
+        echo "✅ Hugo build completed"
+        echo "📊 Generated files:"
+        ls -la public/
+        echo "📁 Total files: $(find public -type f | wc -l)"
 
     - name: Install qshell
       run: |
+        echo "📥 Installing qshell..."
         curl -fsSL https://github.com/qiniu/qshell/releases/download/v2.12.0/qshell-v2.12.0-linux-amd64.tar.gz -o qshell.tar.gz
         tar -zxf qshell.tar.gz
         sudo mv qshell /usr/local/bin/
         sudo chmod +x /usr/local/bin/qshell
+        echo "✅ qshell installed successfully"
         qshell version
 
-    - name: Configure qshell and deploy
+    - name: Validate Secrets
       run: |
-        qshell account ${{ secrets.QINIU_ACCESS_KEY }} ${{ secrets.QINIU_SECRET_KEY }} default
-        qshell qupload2 \
-          --src-dir=./public \
-          --bucket=${{ secrets.QINIU_BUCKET }} \
-          --overwrite \
-          --check-exists \
-          --check-hash \
-          --check-size \
-          --rescan-local
+        echo "🔍 Validating environment variables..."
+        if [ -z "${{ secrets.QINIU_ACCESS_KEY }}" ]; then
+          echo "❌ QINIU_ACCESS_KEY is not set"
+          exit 1
+        else
+          echo "✅ QINIU_ACCESS_KEY is set (length: ${#QINIU_ACCESS_KEY})"
+        fi
+        
+        if [ -z "${{ secrets.QINIU_SECRET_KEY }}" ]; then
+          echo "❌ QINIU_SECRET_KEY is not set"
+          exit 1
+        else
+          echo "✅ QINIU_SECRET_KEY is set (length: ${#QINIU_SECRET_KEY})"
+        fi
+        
+        if [ -z "${{ secrets.QINIU_BUCKET }}" ]; then
+          echo "❌ QINIU_BUCKET is not set"
+          exit 1
+        else
+          echo "✅ QINIU_BUCKET is set: ${{ secrets.QINIU_BUCKET }}"
+        fi
       env:
         QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
         QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
+
+    - name: Configure qshell
+      run: |
+        echo "🔧 Configuring qshell..."
+        qshell account ${{ secrets.QINIU_ACCESS_KEY }} ${{ secrets.QINIU_SECRET_KEY }} default
+        echo "✅ qshell account configured"
+        
+        echo "🔍 Testing bucket access..."
+        qshell bucketinfo ${{ secrets.QINIU_BUCKET }}
+      env:
+        QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
+        QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
+
+    - name: Deploy to Qiniu
+      run: |
+        echo "🚀 Starting deployment to Qiniu..."
+        echo "📁 Source directory: ./public"
+        echo "🪣 Target bucket: ${{ secrets.QINIU_BUCKET }}"
+        
+        # 创建上传配置文件
+        cat > qiniu_config.json << EOF
+        {
+          "src_dir": "./public",
+          "bucket": "${{ secrets.QINIU_BUCKET }}",
+          "overwrite": true,
+          "check_exists": true,
+          "check_hash": true,
+          "check_size": true,
+          "rescan_local": true,
+          "log_file": "qiniu_upload.log",
+          "log_level": "info"
+        }
+        EOF
+        
+        echo "📄 Upload configuration:"
+        cat qiniu_config.json
+        
+        echo "📤 Starting file upload..."
+        qshell qupload qiniu_config.json
+        
+        echo "📋 Upload completed. Checking log..."
+        if [ -f "qiniu_upload.log" ]; then
+          echo "📖 Upload log:"
+          cat qiniu_upload.log
+        fi
+        
+        echo "✅ Deployment completed successfully"
+      env:
+        QINIU_BUCKET: ${{ secrets.QINIU_BUCKET }}
+
+    - name: Verify deployment
+      run: |
+        echo "🔍 Verifying deployment..."
+        echo "📊 Listing some files in bucket:"
+        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 10
+      env:
         QINIU_BUCKET: ${{ secrets.QINIU_BUCKET }} 
