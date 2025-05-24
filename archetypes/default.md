@@ -2,24 +2,35 @@
 date = '{{ .Date }}'
 draft = true
 title = '{{ replace .File.ContentBaseName "-" " " | title }}'
-description = "描述你的文章内容"
-tags = ["标签1", "标签2"]
-categories = ["分类"]
+description = "请填写文章描述，用于SEO和摘要显示"
+tags = []
+categories = []
 author = "Lloyd"
+cover = ""
 ShowToc = true
 TocOpen = false
 searchHidden = false
+ShowReadingTime = true
+ShowShareButtons = false
+ShowPostNavLinks = true
+ShowBreadCrumbs = true
 +++
 
-## 简介
+## 概述
 
-在这里写你的文章简介...
+简要介绍这篇文章的主要内容和背景...
 
 ## 主要内容
 
-### 小标题
+### 核心要点
 
-你的内容...
+- 要点1
+- 要点2
+- 要点3
+
+### 详细说明
+
+在这里展开详细的内容...
 
 ### 代码示例
 
@@ -28,6 +39,31 @@ searchHidden = false
 echo "Hello World"
 ```
 
+```python
+# Python示例
+def example_function():
+    return "Hello from Python"
+```
+
+### 重要提示
+
+> 💡 **提示**: 这里可以添加重要的提示信息
+
+> ⚠️ **注意**: 这里可以添加需要注意的事项
+
 ## 总结
 
-文章总结...
+总结文章的主要观点和收获...
+
+## 参考资料
+
+- [链接1](https://example.com)
+- [链接2](https://example.com)
+
+---
+
+> 📝 **发布提醒**: 
+> 1. 完善文章内容
+> 2. 添加合适的标签和分类
+> 3. 将 `draft: true` 改为 `draft: false`
+> 4. 推送到GitHub完成发布

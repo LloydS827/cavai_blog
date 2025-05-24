@@ -1,4 +1,4 @@
-baseURL: "https://www.cavai.cn/"
+baseURL: "https://your-project-name.zeabur.app/"
 title: "Lloyd's Blog"
 pagination:
   pagerSize: 5

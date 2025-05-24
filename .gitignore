@@ -19,3 +19,6 @@ Thumbs.db
 .cursor
 .-p
 .gitmodules
+
+# Zeabur 相关（如需要，会自动生成）
+.zeabur/
