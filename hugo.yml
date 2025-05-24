@@ -1,5 +1,5 @@
-baseURL: "https://your-project-name.zeabur.app/"
-title: "Lloyd's Blog"
+baseURL: "https://www.cavai.cn/"
+title: "CavAI"
 pagination:
   pagerSize: 5
 theme: "PaperMod"
