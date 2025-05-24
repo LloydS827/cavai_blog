@@ -4,7 +4,6 @@ title: "CavAI"
 pagination:
   pagerSize: 5
 theme: "PaperMod"
-
 # 添加中文字数统计支持
 hasCJKLanguage: true
 
