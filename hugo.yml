@@ -1,5 +1,5 @@
-# 使用Tencent EdgeOne Pages域名
-baseURL: "https://cavaiblog.edgeone.app/"
+# 使用zeabur域名
+baseURL: "https://cavai.zeabur.app/"
 title: "CavAI"
 pagination:
   pagerSize: 5
