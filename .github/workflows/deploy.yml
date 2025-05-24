@@ -120,7 +120,20 @@ jobs:
     - name: Verify deployment
       run: |
         echo "🔍 Verifying deployment..."
-        echo "📊 Listing some files in bucket:"
-        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 10
+        echo "📊 Listing files in bucket (first 20):"
+        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 20
+        
+        echo ""
+        echo "📈 Counting total files in bucket:"
+        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 1000 | wc -l
+        
+        echo ""
+        echo "🔍 Looking for key files:"
+        echo "Checking for index.html:"
+        qshell listbucket ${{ secrets.QINIU_BUCKET }} "index.html" "" 1
+        
+        echo ""
+        echo "🌐 Your site should be available at:"
+        echo "https://swpw9fsbd.hd-bkt.clouddn.com/"
       env:
         QINIU_BUCKET: ${{ secrets.QINIU_BUCKET }} 
