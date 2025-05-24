@@ -2,18 +2,16 @@
 date = '{{ .Date }}'
 draft = true
 title = '{{ replace .File.ContentBaseName "-" " " | title }}'
-description = "请填写文章描述，用于SEO和摘要显示"
-tags = []
-categories = []
-author = "Lloyd"
-cover = ""
+description = ""
+author = "Lloyd Sun"
 ShowToc = true
+ShowReadingTime = true
+ShowPostNavLinks = true
+
 TocOpen = false
 searchHidden = false
-ShowReadingTime = true
 ShowShareButtons = false
-ShowPostNavLinks = true
-ShowBreadCrumbs = true
+ShowBreadCrumbs = false
 +++
 
 ## 概述
