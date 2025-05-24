@@ -75,7 +75,7 @@ jobs:
         echo "✅ qshell account configured"
         
         echo "🔍 Testing bucket access..."
-        qshell bucketinfo ${{ secrets.QINIU_BUCKET }}
+        qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 1
       env:
         QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
         QINIU_SECRET_KEY: ${{ secrets.QINIU_SECRET_KEY }}
