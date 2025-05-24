@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://www.cavai.cn/categories/</loc>
+    <lastmod>2025-05-23T21:14:44+08:00</lastmod>
+  </url><url>
+    <loc>https://www.cavai.cn/posts/hugo-tutorial/</loc>
+    <lastmod>2025-05-23T21:14:44+08:00</lastmod>
+  </url><url>
+    <loc>https://www.cavai.cn/</loc>
+    <lastmod>2025-05-23T21:14:44+08:00</lastmod>
+  </url><url>
+    <loc>https://www.cavai.cn/posts/</loc>
+    <lastmod>2025-05-23T21:14:44+08:00</lastmod>
+  </url><url>
+    <loc>https://www.cavai.cn/tags/</loc>
+    <lastmod>2025-05-23T21:14:44+08:00</lastmod>
+  </url><url>
+    <loc>https://www.cavai.cn/categories/%E5%88%86%E7%B1%BB/</loc>
+    <lastmod>2025-05-23T21:14:44+08:00</lastmod>
+  </url><url>
+    <loc>https://www.cavai.cn/tags/%E6%A0%87%E7%AD%BE1/</loc>
+    <lastmod>2025-05-23T21:14:44+08:00</lastmod>
+  </url><url>
+    <loc>https://www.cavai.cn/tags/%E6%A0%87%E7%AD%BE2/</loc>
+    <lastmod>2025-05-23T21:14:44+08:00</lastmod>
+  </url><url>
+    <loc>https://www.cavai.cn/posts/first-post/</loc>
+    <lastmod>2024-03-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://www.cavai.cn/about/</loc>
+  </url><url>
+    <loc>https://www.cavai.cn/search/</loc>
+  </url>
+</urlset>

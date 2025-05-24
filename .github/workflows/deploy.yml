@@ -90,11 +90,3 @@ jobs:
         
         echo "✅ 部署到七牛云完成！"
         echo "🌐 访问地址: http://$QINIU_BUCKET.your-domain.com"
-
-    # 5. 备用：同时部署到GitHub Pages
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./public
-        cname: www.cavai.cn
