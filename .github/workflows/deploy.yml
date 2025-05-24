@@ -86,6 +86,11 @@ jobs:
         echo "📁 Source directory: ./public"
         echo "🪣 Target bucket: ${{ secrets.QINIU_BUCKET }}"
         
+        # 清理qshell缓存，确保重新上传
+        echo "🧹 Cleaning qshell cache..."
+        rm -rf ~/.qshell/users/default/qupload2/* || true
+        rm -rf ~/.qshell/users/default/listbucket/* || true
+        
         # 先检查上传前的状态
         echo "📊 Files in bucket before upload:"
         qshell listbucket ${{ secrets.QINIU_BUCKET }} "" "" 5 || echo "No files found or bucket empty"
@@ -98,15 +103,15 @@ jobs:
         # 删除旧的上传日志
         rm -f qiniu_upload.log
         
-        # 使用更简单直接的上传方式
-        echo "📤 Starting file upload with qupload2..."
+        # 强制上传所有文件，不检查现有文件
+        echo "📤 Starting FORCED file upload (no hash check)..."
         qshell qupload2 \
           --src-dir=./public \
           --bucket=${{ secrets.QINIU_BUCKET }} \
           --overwrite \
-          --check-exists \
-          --check-hash \
-          --check-size \
+          --skip-path-prefixes="" \
+          --skip-file-prefixes="" \
+          --skip-suffixes="" \
           --rescan-local \
           --log-file=qiniu_upload.log \
           --log-level=info
@@ -115,8 +120,8 @@ jobs:
         
         # 检查上传日志
         if [ -f "qiniu_upload.log" ]; then
-          echo "📖 Upload log (last 20 lines):"
-          tail -20 qiniu_upload.log
+          echo "📖 Upload log (last 30 lines):"
+          tail -30 qiniu_upload.log
         else
           echo "⚠️ No upload log found"
         fi
