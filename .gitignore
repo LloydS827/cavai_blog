@@ -1,5 +1,5 @@
 # Hugo 默认输出目录
-# /public/  # 临时允许提交public目录用于EdgeOne Pages部署
+/public/
 /resources/_gen/
 /assets/jsconfig.json
 hugo_stats.json
