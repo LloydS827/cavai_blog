@@ -45,20 +45,48 @@ jobs:
 
     - name: Direct file sync to Qiniu
       run: |
-        echo "🚀 Starting direct file sync..."
+        echo "🚀 Starting aggressive file sync..."
         
-        # 清理所有缓存
+        # 完全清理所有可能的缓存
         rm -rf ~/.qshell/ || true
+        rm -rf ~/.cache/qshell/ || true
+        rm -rf /tmp/qshell* || true
+        
+        # 重新配置qshell
         qshell account ${{ secrets.QINIU_ACCESS_KEY }} ${{ secrets.QINIU_SECRET_KEY }} default
         
         # 统计要上传的文件
         TOTAL_FILES=$(find public -type f | wc -l)
         echo "📊 Total files to upload: $TOTAL_FILES"
         
-        # 使用rsync风格的同步策略
-        echo "📤 Uploading files with force overwrite..."
+        # 方法1: 先删除主要文件，强制刷新
+        echo "🗑️ Removing key files to force refresh..."
+        qshell delete ${{ secrets.QINIU_BUCKET }} index.html || true
+        qshell delete ${{ secrets.QINIU_BUCKET }} posts/first-post/index.html || true
+        qshell delete ${{ secrets.QINIU_BUCKET }} posts/hugo-tutorial/index.html || true
+        qshell delete ${{ secrets.QINIU_BUCKET }} posts/my-new-blog-post/index.html || true
+        qshell delete ${{ secrets.QINIU_BUCKET }} posts/my-test-article/index.html || true
         
-        # 方法1: 使用qupload2但禁用所有检查
+        # 方法2: 等待一下让删除生效
+        echo "⏳ Waiting for deletion to propagate..."
+        sleep 5
+        
+        # 方法3: 使用fput逐个强制上传所有关键文件
+        echo "📤 Force uploading all critical files with fput..."
+        
+        # 强制上传主页
+        echo "📤 Uploading index.html"
+        qshell fput ${{ secrets.QINIU_BUCKET }} index.html ./public/index.html --overwrite
+        
+        # 强制上传所有文章页面
+        find public/posts -name 'index.html' | while read file; do
+          key=$(echo "$file" | sed 's|^public/||')
+          echo "📤 Force uploading: $key"
+          qshell fput ${{ secrets.QINIU_BUCKET }} "$key" "$file" --overwrite
+        done
+        
+        # 方法4: 批量上传其他文件
+        echo "📤 Batch uploading remaining files..."
         qshell qupload2 \
           --src-dir=./public \
           --bucket=${{ secrets.QINIU_BUCKET }} \
@@ -67,24 +95,11 @@ jobs:
           --check-hash=false \
           --check-size=false \
           --rescan-local=true \
-          --ignore-dir=false
+          --ignore-dir=false \
+          --skip-path-prefixes="" \
+          --skip-suffixes=""
         
-        echo "✅ Bulk upload completed"
-        
-        # 方法2: 强制上传关键文件确保同步
-        echo "🔄 Force uploading critical files..."
-        
-        # 强制上传主页
-        qshell fput ${{ secrets.QINIU_BUCKET }} index.html ./public/index.html
-        
-        # 强制上传所有文章页面
-        find public/posts -name 'index.html' | while read file; do
-          key=$(echo "$file" | sed 's|^public/||')
-          echo "📤 Uploading: $key"
-          qshell fput ${{ secrets.QINIU_BUCKET }} "$key" "$file"
-        done
-        
-        echo "✅ Critical files upload completed"
+        echo "✅ Aggressive sync completed"
         
       env:
         QINIU_ACCESS_KEY: ${{ secrets.QINIU_ACCESS_KEY }}
