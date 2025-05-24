@@ -1,234 +1,134 @@
-# Lloyd's Blog
+# CavAI Blog
 
-基于Hugo + PaperMod主题的个人博客，部署在Zeabur平台。
+🚀 **基于Hugo + PaperMod主题的现代化个人博客，部署在Tencent EdgeOne Pages**
 
-## �� 写作流程
+[![部署状态](https://img.shields.io/badge/部署-EdgeOne%20Pages-success)](https://cavaiblog.edgeone.app/)
+[![Hugo](https://img.shields.io/badge/Hugo-v0.120+-blue.svg)](https://gohugo.io/)
+[![主题](https://img.shields.io/badge/主题-PaperMod-purple.svg)](https://github.com/adityatelange/hugo-PaperMod)
 
-### 1. 创建新文章 (Page Bundle方式)
+## 📖 项目概述
 
-使用Hugo命令创建新文章，每篇文章都有独立的文件夹：
+CavAI Blog 是一个专注于AI教育和技术分享的个人博客平台。采用现代化的静态网站生成技术，提供快速、安全、优雅的阅读体验。
+
+**🌐 在线访问**: [https://cavaiblog.edgeone.app/](https://cavaiblog.edgeone.app/)
+
+## ⚡ 技术栈
+
+- **静态网站生成器**: [Hugo](https://gohugo.io/) (v0.120+)
+- **主题**: [PaperMod](https://github.com/adityatelange/hugo-PaperMod)
+- **部署平台**: [Tencent EdgeOne Pages](https://edgeone.ai/)
+- **版本控制**: GitHub
+- **CI/CD**: GitHub Actions (构建验证)
+- **域名**: EdgeOne提供的自定义域名
+
+## 🚀 部署配置
+
+### EdgeOne Pages 配置
+
+本项目使用 Tencent EdgeOne Pages 自动部署，配置如下：
+
+| 配置项 | 值 |
+|--------|-----|
+| **代码仓库** | `lloyds827/lloyds827.github.io` |
+| **分支** | `master` |
+| **框架** | `Hugo` / `Other` |
+| **构建命令** | `hugo --minify` |
+| **输出目录** | `public` |
+| **安装命令** | *(留空)* |
+| **Node.js版本** | `18+` |
+
+### 环境变量 (可选)
+```
+HUGO_VERSION=0.120.0
+HUGO_ENV=production
+```
+
+### 自动部署流程
+
+1. **推送代码** → GitHub master分支
+2. **EdgeOne检测** → 自动拉取最新代码
+3. **Hugo构建** → 执行 `hugo --minify`
+4. **部署上线** → 更新到CDN节点
+5. **访问网站** → 通过EdgeOne域名访问
+
+## ✍️ 写作指南
+
+### 快速开始
 
 ```bash
-# 基本语法
-hugo new posts/文章名称/index.md
+# 1. 克隆项目
+git clone https://github.com/lloyds827/lloyds827.github.io.git
+cd lloyds827.github.io
 
-# 具体示例
-hugo new posts/ai-tutorial/index.md
-hugo new posts/docker-guide/index.md
-hugo new posts/thoughts-2024/index.md
-```
+# 2. 创建新文章
+hugo new posts/my-article/index.md
 
-创建后的文章结构：
+# 3. 编辑文章
+# 将 draft: true 改为 draft: false
 
-```
-content/posts/
-└── ai-tutorial/           # 文章文件夹
-    └── index.md          # 文章内容文件
-```
+# 4. 本地预览
+hugo server -D
 
-### 2. 添加图片和资源
-
-每篇文章都有独立的文件夹，可以直接添加图片和资源：
-
-```bash
-content/posts/ai-tutorial/
-├── index.md              # 文章内容
-├── cover.jpg             # 封面图片
-├── diagram.png           # 示意图
-└── assets/               # 资源文件夹
-    ├── screenshot1.png
-    └── code-example.txt
-```
-
-在文章中引用图片：
-```markdown
-# 同目录下的图片
-![封面图片](cover.jpg)
-
-# assets文件夹中的图片  
-![截图](assets/screenshot1.png)
-
-# 带图片说明
-{{< figure src="diagram.png" caption="系统架构图" >}}
-```
-
-### 3. 编辑文章
-
-新创建的文章会自动使用 `archetypes/default.md` 模板，包含以下结构：
-
-```toml
-+++
-date = '2025-05-24T22:30:00+08:00'  # 自动生成当前时间
-draft = true                        # 默认为草稿状态
-title = 
-```
-
-### 4. 发布文章
-
-编辑完成后，将 `draft = true` 改为 `draft = false`，然后推送到GitHub：
-
-```bash
+# 5. 发布文章
 git add .
-git commit -m "新增文章: 你的文章标题"
+git commit -m "新增文章：文章标题"
 git push origin master
 ```
 
-Zeabur会自动检测并重新部署你的博客。
+### 文章结构 (Page Bundle)
 
-## 🎨 文章模板自定义
+推荐使用Page Bundle方式组织文章，每篇文章都有独立的文件夹：
 
-### 模板文件位置
-
-文章模板位于 `archetypes/default.md`，你可以根据需要自定义这个模板。
-
-### Front Matter 参数详解
-
-#### 必需参数
-- **`title`**: 文章标题
-- **`date`**: 发布日期（自动生成）
-- **`draft`**: 草稿状态（true=草稿，false=发布）
-
-#### 可选参数
-- **`description`**: 文章描述（用于SEO和摘要）
-- **`tags`**: 文章标签（数组格式）
-- **`categories`**: 文章分类（数组格式）
-- **`author`**: 作者名称
-- **`cover`**: 封面图片路径
-- **`weight`**: 文章权重（用于排序）
-
-#### PaperMod主题专用参数
-- **`ShowToc`**: 是否显示目录（true/false）
-- **`TocOpen`**: 目录是否默认展开（true/false）
-- **`searchHidden`**: 是否在搜索中隐藏（true/false）
-- **`ShowReadingTime`**: 显示阅读时间（true/false）
-- **`ShowShareButtons`**: 显示分享按钮（true/false）
-- **`ShowPostNavLinks`**: 显示上下篇导航（true/false）
-- **`ShowBreadCrumbs`**: 显示面包屑导航（true/false）
-- **`editPost`**: 编辑文章链接配置
-
-### 自定义模板示例
-
-你可以修改 `archetypes/default.md` 来自定义模板：
-
-```markdown
-+++
-date = '{{ .Date }}'
-draft = true
-title = '{{ replace .File.ContentBaseName "-" " " | title }}'
-description = "请填写文章描述..."
-tags = []
-categories = []
-author = "Lloyd"
-cover = ""
-ShowToc = true
-TocOpen = false
-searchHidden = false
-ShowReadingTime = true
-ShowShareButtons = false
-ShowPostNavLinks = true
-+++
-
-## 概述
-
-简要介绍这篇文章的主要内容...
-
-## 详细内容
-
-### 核心要点
-
-- 要点1
-- 要点2
-- 要点3
-
-### 代码示例
-
-```语言
-// 代码示例
+```
+content/posts/
+└── my-article/           # 文章目录
+    ├── index.md         # 文章内容
+    ├── cover.jpg        # 封面图片
+    ├── image1.png       # 文章图片
+    └── assets/          # 其他资源
+        └── diagram.svg
 ```
 
-## 结论
+### Front Matter 模板
 
-总结文章的主要观点...
-
+```yaml
+---
+title: "文章标题"
+date: 2025-05-24T23:30:00+08:00
+draft: false
+description: "文章简介，用于SEO和摘要"
+tags: ["AI", "教育", "技术"]
+categories: ["技术分享"]
+author: "Lloyd Sun"
+cover: "cover.jpg"
+ShowToc: true
+TocOpen: false
+searchHidden: false
+ShowReadingTime: true
+ShowShareButtons: false
+ShowPostNavLinks: true
+ShowBreadCrumbs: false
 ---
 
-> 💡 **提示**: 记得将 `draft` 改为 `false` 来发布文章！
+## 文章内容
+
+在这里编写文章内容...
 ```
 
-### 创建特定类型模板
+### 图片使用
 
-你还可以为不同类型的文章创建专门的模板：
-
-```bash
-# 创建技术文章模板
-# 在 archetypes/ 目录下创建 tech.md
-
-# 使用特定模板创建文章
-hugo new --kind tech posts/my-tech-post.md
-```
-
-## 📁 内容组织结构
-
-```
-content/
-├── posts/              # 博客文章
-│   ├── my-first-post.md
-│   └── hugo-tutorial.md
-├── about/              # 关于页面
-│   └── index.md
-└── search/             # 搜索页面
-    └── index.md
-```
-
-## 📷 图片和资源管理
-
-### 添加图片
-
-1. **方法一：使用static目录**
-   ```
-   static/images/my-image.jpg
-   ```
-   在文章中引用：
-   ```markdown
-   ![图片描述](/images/my-image.jpg)
-   ```
-
-2. **方法二：页面捆绑包（推荐）**
-   ```
-   content/posts/my-post/
-   ├── index.md
-   ├── featured.jpg
-   └── diagram.png
-   ```
-   在文章中引用：
-   ```markdown
-   ![图片描述](featured.jpg)
-   ```
-
-### 文件下载
-
-将可下载文件放在 `static/files/` 目录：
 ```markdown
-[下载PDF](/files/document.pdf)
-```
+# 同目录图片
+![封面](cover.jpg)
 
-## 🔍 高级写作技巧
+# 带说明的图片
+{{< figure src="image1.png" caption="图片说明" >}}
 
-### 数学公式
-
-支持LaTeX数学公式：
-```markdown
-行内公式：$E = mc^2$
-
-块级公式：
-$$
-\sum_{i=1}^{n} x_i = x_1 + x_2 + \cdots + x_n
-$$
+# 资源文件夹中的图片
+![图表](assets/diagram.svg)
 ```
 
 ### 代码高亮
-
-支持多种编程语言语法高亮：
 
 ````markdown
 ```python
@@ -237,79 +137,222 @@ def hello_world():
 ```
 
 ```bash
-# Shell命令
-hugo server -D
+hugo server --port 1313 --bind 0.0.0.0
 ```
 ````
 
-### 提示框和引用
+### 数学公式
 
 ```markdown
-> 💡 **提示**: 这是一个提示框
+# 行内公式
+这是一个公式：$E = mc^2$
 
-> ⚠️ **警告**: 这是一个警告框
-
-> ✅ **成功**: 这是一个成功提示
+# 块级公式
+$$
+\sum_{i=1}^{n} x_i = \frac{1}{n}\sum_{i=1}^{n} y_i
+$$
 ```
 
----
+## 🛠️ 本地开发
 
-## 🚀 技术配置
+### 环境要求
 
-### 本地开发
+- **Hugo**: v0.120.0 或更高版本 (Extended版本)
+- **Git**: 用于版本控制
+- **操作系统**: Windows / macOS / Linux
+
+### 安装Hugo
 
 ```bash
-# 克隆仓库
-git clone https://github.com/LloydS827/cavai_blog.git
-cd cavai_blog
+# macOS (使用Homebrew)
+brew install hugo
 
-# 安装Hugo (选择你的系统)
-# macOS: brew install hugo
-# Windows: choco install hugo-extended  
-# Linux: sudo snap install hugo
+# Windows (使用Chocolatey)
+choco install hugo-extended
 
-# 启动本地服务器
+# Windows (使用Scoop)
+scoop install hugo-extended
+
+# Linux (使用Snap)
+sudo snap install hugo
+```
+
+### 本地运行
+
+```bash
+# 启动开发服务器
 hugo server -D
-# 访问 http://localhost:1313
+
+# 自定义端口
+hugo server -D --port 8080
+
+# 绑定所有地址 (用于局域网访问)
+hugo server -D --bind 0.0.0.0
 ```
 
-### Zeabur部署
+### 构建生产版本
 
-**自动部署**：推送到GitHub后Zeabur自动构建部署
-- 访问 [Zeabur](https://zeabur.com)
-- 连接GitHub仓库：`LloydS827/cavai_blog`
-- 自动检测Hugo项目并部署
+```bash
+# 构建静态文件到public目录
+hugo --minify
 
-### 项目结构
-
-```
-cavai_blog/
-├── content/          # 文章内容
-├── static/           # 静态资源  
-├── themes/           # Hugo主题
-├── archetypes/       # 文章模板
-├── layouts/          # 自定义布局
-├── assets/           # 资源文件
-└── hugo.yml          # Hugo配置
+# 构建并清理输出目录
+hugo --minify --cleanDestinationDir
 ```
 
-### 主要配置文件
+## 📁 项目结构
 
-- **`hugo.yml`**: Hugo网站配置
-- **`archetypes/default.md`**: 默认文章模板
+```
+lloyds827.github.io/
+├── archetypes/          # 文章模板
+│   └── default.md      
+├── assets/              # 资源文件 (SCSS, JS等)
+├── content/             # 网站内容
+│   ├── posts/          # 博客文章
+│   ├── about/          # 关于页面
+│   └── search/         # 搜索页面
+├── layouts/             # 自定义布局模板
+├── static/              # 静态资源 (图片, CSS, JS等)
+│   └── logo.png        
+├── themes/              # Hugo主题
+│   └── PaperMod/       # PaperMod主题 (Git子模块)
+├── .github/             # GitHub相关配置
+├── .gitignore           # Git忽略文件
+├── hugo.yml             # Hugo网站配置
+└── README.md            # 项目说明
+```
 
----
+## ⚙️ 配置文件
 
-## 📞 联系方式
+### hugo.yml 核心配置
 
-- **GitHub**: [@LloydS827](https://github.com/lloyds827)
-- **Email**: sunguangji827@hotmail.com
-- **Blog**: [访问博客](https://your-project.zeabur.app)
+```yaml
+baseURL: "https://cavaiblog.edgeone.app/"
+title: "CavAI"
+theme: "PaperMod"
+hasCJKLanguage: true
+relativeURLs: true
+canonifyURLs: false
+
+params:
+  env: production
+  author: "Lloyd Sun"
+  defaultTheme: auto
+  ShowReadingTime: true
+  ShowCodeCopyButtons: true
+  ShowWordCount: true
+  UseHugoToc: true
+```
+
+## 🔍 功能特性
+
+- ✅ **响应式设计** - 完美适配桌面端和移动端
+- ✅ **暗黑模式** - 自动切换主题
+- ✅ **全文搜索** - 基于JSON索引的快速搜索
+- ✅ **代码高亮** - 支持多种编程语言
+- ✅ **数学公式** - LaTeX数学公式渲染
+- ✅ **SEO优化** - 完整的元数据和结构化数据
+- ✅ **RSS订阅** - 自动生成RSS feed
+- ✅ **阅读时间** - 智能估算文章阅读时间
+- ✅ **目录导航** - 自动生成文章目录
+- ✅ **面包屑** - 清晰的导航路径
+- ✅ **社交分享** - 支持多平台分享
+- ✅ **CDN加速** - EdgeOne全球CDN网络
+
+## 🚨 故障排除
+
+### 常见问题
+
+#### 1. EdgeOne部署404错误
+
+**解决方案**:
+- 确认构建命令为：`hugo --minify`
+- 确认输出目录为：`public`
+- 确认baseURL配置正确
+- 等待5-10分钟让CDN缓存刷新
+
+#### 2. 主题未加载
+
+```bash
+# 初始化并更新子模块
+git submodule init
+git submodule update --recursive
+```
+
+#### 3. 本地构建失败
+
+```bash
+# 检查Hugo版本
+hugo version
+
+# 清理并重新构建
+rm -rf public/
+hugo --minify
+```
+
+### 调试方法
+
+```bash
+# 详细构建日志
+hugo --verbose --log
+
+# 检查配置
+hugo config
+
+# 验证内容
+hugo list all
+```
+
+## 🎯 性能优化
+
+- **静态生成** - 所有页面预先生成，加载速度极快
+- **图片优化** - 自动压缩和格式转换
+- **代码分割** - CSS和JS按需加载
+- **CDN缓存** - EdgeOne全球节点缓存
+- **Gzip压缩** - 自动压缩传输内容
+- **懒加载** - 图片和内容懒加载
+
+## 🔐 安全特性
+
+- **HTTPS** - 全站HTTPS加密
+- **CSP** - 内容安全策略
+- **静态部署** - 无服务器安全风险
+- **CDN防护** - EdgeOne DDoS防护
+
+## 📊 分析与监控
+
+- **性能监控** - EdgeOne内置分析
+- **访问统计** - 实时访问数据
+- **错误追踪** - 自动错误监控
+- **SEO报告** - 搜索引擎优化报告
+
+## 🤝 贡献指南
+
+欢迎提交Issue和Pull Request：
+
+1. Fork项目
+2. 创建功能分支：`git checkout -b feature/amazing-feature`
+3. 提交更改：`git commit -m 'Add amazing feature'`
+4. 推送分支：`git push origin feature/amazing-feature`
+5. 提交Pull Request
 
 ## 📄 许可证
 
-MIT License
+本项目基于 MIT 许可证开源 - 查看 [LICENSE](LICENSE) 文件了解详情
+
+## 📞 联系方式
+
+- **作者**: Lloyd Sun
+- **邮箱**: sunguangji827@hotmail.com
+- **GitHub**: [@lloyds827](https://github.com/lloyds827)
+- **博客**: [https://cavaiblog.edgeone.app/](https://cavaiblog.edgeone.app/)
 
 ---
 
-> **📝 快速开始**: 运行 `hugo new posts/my-first-post.md` 创建你的第一篇文章！
+<div align="center">
+
+**⭐ 如果这个项目对你有帮助，请给个Star支持一下！ ⭐**
+
+Made with ❤️ by [Lloyd Sun](https://github.com/lloyds827)
+
+</div>

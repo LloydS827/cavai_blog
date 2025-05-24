@@ -1,6 +1,0 @@
-{
-  "framework": "hugo",
-  "buildCommand": "hugo --minify --destination public",
-  "outputDirectory": "public",
-  "nodeVersion": "18"
-} 
