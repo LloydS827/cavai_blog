@@ -1,5 +1,4 @@
-# 使用zeabur域名
-baseURL: "https://cavaiblog.netlify.app/"
+baseURL: "https://cavai.cn/"
 title: "CavAI"
 pagination:
   pagerSize: 5
