@@ -19,6 +19,11 @@ canonifyURLs: false # 改为false避免路径冲突
 permalinks:
   posts: "/:section/:slug/"
 
+# 缓存
+caches:
+  images:
+    dir: :cacheDir/images
+
 # 为搜索功能添加必要的输出
 outputs:
   home:
