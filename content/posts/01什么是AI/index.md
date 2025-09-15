@@ -1,10 +1,12 @@
 +++
 date = '2025-05-25T15:31:45+08:00'
+lastmod = '2025-09-15T00:00:00+08:00'
 title = '01什么是AI'
 description = ""
 author = "Lloyd Sun"
 ShowToc = true
 ShowReadingTime = true
+ShowWordCount = false
 ShowPostNavLinks = true
 
 TocOpen = false

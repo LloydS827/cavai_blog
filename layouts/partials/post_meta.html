@@ -1,0 +1,40 @@
+{{- $meta := newScratch -}}
+
+{{- /* Date format: Sep 15 2025 (force fixed format) */ -}}
+{{- $fmt := "Jan 2 2006" -}}
+
+{{- /* 1) Updated date (prefer .Lastmod, fallback to .Date) */ -}}
+{{- $updatedTime := .Date -}}
+{{- if not .Lastmod.IsZero -}}
+  {{- $updatedTime = .Lastmod -}}
+{{- end -}}
+{{- if not $updatedTime.IsZero -}}
+  {{- $updatedStr := $updatedTime | time.Format $fmt -}}
+  {{- $meta.Add "parts" (slice (printf "<span title='%s'>%s</span>" ($updatedTime) ($updatedStr))) -}}
+{{- end -}}
+
+{{- /* 2) Reading time · Author */ -}}
+{{- $middle := newScratch -}}
+{{- if (.Param "ShowReadingTime") -}}
+  {{- $middle.Add "items" (slice (printf "%d min" .ReadingTime)) -}}
+{{- end -}}
+{{- if not (.Param "hideAuthor") -}}
+  {{- with (partial "author.html" .) -}}
+    {{- $middle.Add "items" (slice .) -}}
+  {{- end -}}
+{{- end -}}
+{{- with ($middle.Get "items") -}}
+  {{- $meta.Add "parts" (slice (delimit . "&nbsp;;&nbsp;")) -}}
+{{- end -}}
+
+{{- /* 3) Published date with suffix */ -}}
+{{- if not .Date.IsZero -}}
+  {{- $published := .Date | time.Format $fmt -}}
+  {{- $meta.Add "parts" (slice (printf "<span title='%s'>%s(Published)</span>" (.Date) ($published))) -}}
+{{- end -}}
+
+{{- with ($meta.Get "parts") -}}
+  {{- delimit . "&nbsp;;&nbsp;" | safeHTML -}}
+{{- end -}}
+
+
